@@ -62,6 +62,14 @@ $ bash start.sh
 $ docker build . -t sparksubmit:2.4.0-hadoop2.7
 ```
 
+## Flask
+
+1. Build the docker image within the directory /flask:
+
+```sh
+$ docker build . -t dockerflask
+```
+
 # Docker compose
 
 ## Composing all the images
