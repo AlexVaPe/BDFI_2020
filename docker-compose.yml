@@ -13,8 +13,8 @@ services:
     image: wurstmeister/zookeeper
     container_name: zookeeper
     hostname: zookeeper
-    networks:
-      - net
+    # networks:
+    #   - net
     ports:
       - "2181:2181"
   kafka-broker:
@@ -28,19 +28,20 @@ services:
       # KAFKA_LISTENERS: INSIDE://172.0.0.2:9092
       # KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT
       # KAFKA_BROKER_LISTENER_NAME: INSIDE
-      KAFKA_ADVERTISED_HOST_NAME: 172.0.0.2
+      KAFKA_ADVERTISED_HOST_NAME: kafka-broker
       KAFKA_CREATE_TOPICS: "flight_delay_classification_request:1:1"
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-    networks:
-      - net
+    # networks:
+    #   - net
     ports:
       - "9092:9092"
   spark-master:
     image: bde2020/spark-master:2.4.0-hadoop2.7
     volumes:
       - .:/app/
+    hostname: spark-master
     container_name: spark-master
     ports:
       - "7077:7077"
@@ -72,13 +73,14 @@ services:
       - kafka-broker
     image: mongo:4.4
     container_name: mongod
+    hostname: mongod
     ports:
       - "27017:27017"
     volumes:
       # - ".:/data:rw"
       - .:/app/
-    networks:
-      - net
+    # networks:
+    #   - net
   dockerflask:
     depends_on: 
       - mongod
@@ -90,12 +92,12 @@ services:
       - ".:/app"
     working_dir: /app/practica_big_data_2019/resources/web
     command: python3 predict_flask.py
-networks: 
-  net:
-    ipam:
-      config:
-        - subnet: 172.0.0.0/24
-          aux_addresses: 
-            kafka-broker: 172.0.0.2
-            mongod: 172.0.0.3
-    driver: bridge
+# networks: 
+#   net:
+#     ipam:
+#       config:
+#         - subnet: 172.0.0.0/24
+#           aux_addresses: 
+#             kafka-broker: 172.0.0.2
+#             mongod: 172.0.0.3
+#     driver: bridge
